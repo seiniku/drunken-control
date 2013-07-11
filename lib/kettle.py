@@ -7,7 +7,7 @@ class Kettle(threading.Thread):
     A class for managing a brew kettle
     """
 
-    def __init__(self, conf):
+    def __init__(self, conf, name):
         threading.Thread.__init__(self)
         self.daemon = True
         self.enabled = conf["enabled"]
@@ -17,6 +17,7 @@ class Kettle(threading.Thread):
         self.band = 0.2
         self.jee = Adafruit_MCP230XX(address=0x26, num_gpios=8, busnum=1)
         self.jee.config(self.gpio_number,self.jee.OUTPUT)
+        self.name = name
     def run(self):
         self.sensor.start()
         duty = 0
@@ -35,6 +36,7 @@ class Kettle(threading.Thread):
                         duty = 0
                 if self.target > 299:
                     duty = self.target - 300
+                print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) + "%"
                 self._switch(duty)
 
             else:
@@ -58,7 +60,6 @@ class Kettle(threading.Thread):
     Takes the pin on a jeelabs output plug and sets it to 1 or 0 depending on if the heat should be on or not.
     '''
     def _switch(self, duty_cycle):
-        print str(self.gpio_number) + " " + str(duty_cycle)
         cycle_time = 2
         if duty_cycle == 100:
             self.jee.output(self.gpio_number,1)

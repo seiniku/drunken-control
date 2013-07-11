@@ -32,17 +32,14 @@ class Temp(Thread):
                 crcLine=lines[0]
                 tempLine=lines[1]
                 result_list = tempLine.split("=")
-
-                temp = float(result_list[-1])/1000 # temp in Celcius
-
-                temp = temp + self.correctionFactor # correction factor
-
-                temp = (9.0/5.0)*temp + 32
-                if crcLine.find("NO") > -1:
-                    temp = -999
-               #     print "crc error on " + self.fileName
-                self.currentTemp = temp
-               # print "Current: " + str(self.currentTemp) + " " + str(self.fileName)
+                if crcLine.find("YES") > -1:
+                    temp = float(result_list[-1])/1000 # temp in Celcius
+                    temp = temp + self.correctionFactor # correction factor
+                    temp = (9.0/5.0)*temp + 32
+                    self.currentTemp = temp
+                else:
+                    print "crc error on " + self.fileName
+                print "Current: " + str(self.currentTemp) + " " + str(self.fileName)
 
             time.sleep(1)
 

@@ -19,7 +19,7 @@ except IOError:
 #The list of kettles defined in the config file
 kettles = {}
 for config in data:
-    kettles[config] =  Kettle(conf=data[config])
+    kettles[config] = Kettle(conf=data[config], name=config)
     kettles[config].start()
 #Reads the config file  every five second and checks for changes. If changes are found it sets enabled and target for each kettle defined
 while True:
