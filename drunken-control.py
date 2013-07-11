@@ -1,7 +1,6 @@
 #!/usr/bin/python
-
 import time
-from kettle import Kettle
+from lib.kettle import Kettle
 from yaml import load, dump
 import threading
 try:
