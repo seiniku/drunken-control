@@ -1,5 +1,5 @@
 *.py[cod]
-
+*.yaml
 # C extensions
 *.so
 
