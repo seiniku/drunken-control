@@ -1,5 +1,7 @@
 import threading
 import time
+import datetime
+import MySQLdb as mdb
 from temp import Temp
 from Adafruit_MCP230xx import *
 class Kettle(threading.Thread):
@@ -7,7 +9,7 @@ class Kettle(threading.Thread):
     A class for managing a brew kettle
     """
 
-    def __init__(self, conf, name):
+    def __init__(self, conf, name, brewid):
         threading.Thread.__init__(self)
         self.daemon = True
         self.enabled = conf["enabled"]
@@ -18,6 +20,9 @@ class Kettle(threading.Thread):
         self.jee = Adafruit_MCP230XX(address=0x26, num_gpios=8, busnum=1)
         self.jee.config(self.gpio_number,self.jee.OUTPUT)
         self.name = name
+        self.database = mdb.connect('chop.bad.wolf','brew','brewit','brewery')
+        self.brewid = brewid
+
     def run(self):
         self.sensor.start()
         duty = 0
@@ -26,6 +31,8 @@ class Kettle(threading.Thread):
                 self.sensor.setEnabled(True)
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != -999:
+                    if self.brewid:
+                        self._updatedb(currentTemp)
                     if currentTemp < (self.target - 10):
                         duty = 100
                     elif (self.target - 10) < currentTemp < (self.target - self.band):
@@ -48,7 +55,6 @@ class Kettle(threading.Thread):
 
     def setTarget(self, target):
         self.target = target
-
 
     def setEnabled(self, enabled):
         self.enabled = enabled
@@ -75,3 +81,11 @@ class Kettle(threading.Thread):
             time.sleep(cycle_time*(1.0-duty))
         return
 
+
+    def _updatedb(self, temp):
+        try:
+            time = datetime.datetime.now()
+            cursor = self.database.cursor()
+            cursor.execute('INSERT INTO templog (brewid, time, temp, target, element) VALUES (%s,%s,%s,%s,%s)',(self.brewid, time, temp, self.target, self.name))
+            self.database.commit()
+            cursor.close()

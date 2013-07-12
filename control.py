@@ -3,6 +3,7 @@ import time
 from lib.kettle import Kettle
 from yaml import load, dump
 import threading
+import MySQLdb as mdb
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -19,7 +20,24 @@ def getconfig(file):
         print "Error: Cannot find config file " + file
         return 0
 
-def start():
+#generates a new brewid if the database is connected.
+def newbrewid(brewname):
+    try:
+        database = mdb.connect('chop.bad.wolf', 'brew', 'brewit', 'brewery');
+        cursor = database.cursor()
+        cursor.execute('INSERT INTO brewlog (brew) VALUES (%s)', [brewname])
+        brewid = cursor.lastrowid
+        database.commit()
+        cursor.close()
+    except:
+        print "Error connecting to database"
+        brewid = 0
+    return brewid
+
+
+def start(brewname="newbrau"):
+    brewid = newbrewid(brewname)
+
     configfile="config.yaml"
     data = getconfig(configfile)
     if not data:
@@ -27,7 +45,7 @@ def start():
 #The list of kettles defined in the config file
     kettles = {}
     for config in data:
-        kettles[config] = Kettle(conf=data[config], name=config)
+        kettles[config] = Kettle(conf=data[config], name=config, brewid=brewid)
         kettles[config].start()
 #Reads the config file  every five second and checks for changes. If changes are found it sets enabled and target for each kettle defined
     while True:
