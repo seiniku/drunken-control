@@ -74,8 +74,10 @@ def latest_json(B_id):
     thetemp = data[1]
     thetarget = data[2]
     return jsonify(time=thetime, temp=thetemp, target=thetarget)
-
+@app.route('/')
+def home():
+    return render_template('home.html')
 #starts the dev web server
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=80,debug=False)
+    app.run(host='0.0.0.0',port=80,debug=True)
 

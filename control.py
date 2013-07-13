@@ -30,13 +30,14 @@ def newbrewid(brewname):
         database.commit()
         cursor.close()
     except:
-        print "Error connecting to database"
+        print "Error connecting to database, session will not be saved nor will the web interface work"
         brewid = 0
     return brewid
 
 
-def start(brewname="newbrau"):
-    brewid = newbrewid(brewname)
+def start(brewname="adellewit", brewid=0):
+    if brewid == 0:
+        brewid = newbrewid(brewname)
 
     configfile="config.yaml"
     data = getconfig(configfile)

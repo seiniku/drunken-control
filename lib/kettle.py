@@ -35,10 +35,10 @@ class Kettle(threading.Thread):
                         self._updatedb(currentTemp)
                     if currentTemp < (self.target - 10):
                         duty = 100
-                    elif (self.target - 10) < currentTemp < (self.target - self.band):
+                    elif (self.target - 5) < currentTemp < (self.target + self.band):
                         duty = 50
-                    elif (self.target - 5) < currentTemp < (self.target - self.band):
-                        duty = 25
+                    elif (self.target - 10) < currentTemp < (self.target - self.band):
+                        duty = 75
                     else:
                         duty = 0
                 if self.target > 299:
@@ -66,6 +66,7 @@ class Kettle(threading.Thread):
     Takes the pin on a jeelabs output plug and sets it to 1 or 0 depending on if the heat should be on or not.
     '''
     def _switch(self, duty_cycle):
+        self.jee.config(4,self.jee.OUTPUT)
         cycle_time = 2
         if duty_cycle == 100:
             self.jee.output(self.gpio_number,1)
@@ -81,7 +82,9 @@ class Kettle(threading.Thread):
             time.sleep(cycle_time*(1.0-duty))
         return
 
-
+    '''
+    takes the temperature and updates the database as well as the ramdisk file
+    '''
     def _updatedb(self, temp):
         try:
             time = datetime.datetime.now()
@@ -89,3 +92,12 @@ class Kettle(threading.Thread):
             cursor.execute('INSERT INTO templog (brewid, time, temp, target, element) VALUES (%s,%s,%s,%s,%s)',(self.brewid, time, temp, self.target, self.name))
             self.database.commit()
             cursor.close()
+        except:
+            print "Error connecting to database"
+
+#        try:
+        logfile = "/mnt/ramdisk/" + self.name
+        jsonmessage = '{"target": ' + str(self.target) + ', "temp": ' + str(temp) + '}'
+        with open (logfile, 'w+') as f: f.write(jsonmessage)
+#        except:
+#            print "Error writing to ramdisk file"

@@ -39,7 +39,7 @@ class Temp(Thread):
                     self.currentTemp = temp
                 else:
                     print "crc error on " + self.fileName
-                print "Current: " + str(self.currentTemp) + " " + str(self.fileName)
+                #print "Current: " + str(self.currentTemp) + " " + str(self.fileName)
 
             time.sleep(1)
 
