@@ -107,7 +107,6 @@ def getKettles():
                 f.close()
             except:
                 pretemp["temp"] = "Error Reading Temp"
-        print pretemp
     return data
 
 @app.route('/')
@@ -117,8 +116,10 @@ def home():
 
     return render_template('home.html',kettles=kettlelist)
 
-
-
+@app.route('/configure', methods=['POST'])
+def configure():
+    print request.form
+    return redirect('/')
 
 #starts the dev web server
 if __name__ == '__main__':

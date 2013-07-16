@@ -32,5 +32,5 @@ sudo aptitude install vim digitemp wicd-curses wicd i2c-tools git tmuxsu
 required
 ```
 sudo aptitude install python-pip python-smbus python-mysqldb
-sudo pip install flask pyyaml tornado
+sudo pip install flask pyyaml tornado simplejson
 ```

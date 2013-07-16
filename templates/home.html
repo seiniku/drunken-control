@@ -1,8 +1,8 @@
 <html>
     <body>
         <h1>
-            Let's get started
-        </h1>
+        	Status
+	</h1>
         
         <p>
         
@@ -15,6 +15,20 @@
         {% endfor %}
 
         </p>
+	<h1>
+		Configuration
+	</h1>
+	<form action="/configure" method="post">
+	{% for item in kettles %}
+	<b>{{ item|e }}:</b> 
+	<UL>
+
+		<LI>Enabled<input name="{{ item|e }}_enabled" type=checkbox {% if kettles[item].enabled %} checked {% endif %}></input></LI>
+		<LI>Target <input name="{{ item|e  }}_target" type=number value={{ kettles[item].target|e }}></LI>
+	</UL>
+	{% endfor %}
+	<input type="submit" value="Update configuration">
+	</form
      </body
 
 </html>
