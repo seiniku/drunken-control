@@ -3,7 +3,12 @@ from flask import *
 import MySQLdb as mdb
 import simplejson as json
 import datetime,time
-import threading
+from yaml import load
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
 app = Flask(__name__)
 # configuration
 app.config['SECRET_KEY'] = 'F34TF$($e34D';
@@ -74,9 +79,47 @@ def latest_json(B_id):
     thetemp = data[1]
     thetarget = data[2]
     return jsonify(time=thetime, temp=thetemp, target=thetarget)
+
+
+def getconfig (file):
+    try:
+        f= open(file)
+        data = load (f, Loader=Loader)
+        f.close
+        return data
+    except IOError:
+        print "Error: Cannot find config file " + file
+        return 0
+
+# gets info from config file and reads from the ramdisk file to get the current temp.
+def getKettles():
+    kettlepath='/mnt/ramdisk/'
+    configfile='config.yaml'
+
+    data = getconfig(configfile)
+    for config in data:
+        kettlefile=kettlepath + config
+        pretemp = data[config]
+        if pretemp["enabled"]:
+            try:
+                f = open(kettlefile)
+                pretemp["temp"] = f.read().strip()
+                f.close()
+            except:
+                pretemp["temp"] = "Error Reading Temp"
+        print pretemp
+    return data
+
 @app.route('/')
 def home():
-    return render_template('home.html')
+    kettlelist = getKettles()
+
+
+    return render_template('home.html',kettles=kettlelist)
+
+
+
+
 #starts the dev web server
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=80,debug=True)

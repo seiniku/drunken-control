@@ -1,0 +1,20 @@
+<html>
+    <body>
+        <h1>
+            Let's get started
+        </h1>
+        
+        <p>
+        
+        
+        {% for item in kettles %}
+            {% if kettles[item].enabled %}
+                {{ item|e }} is at {{ kettles[item].temp|e }} and is aiming for {{ kettles[item].target|e }}
+                <br />
+            {% endif %}
+        {% endfor %}
+
+        </p>
+     </body
+
+</html>

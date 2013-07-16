@@ -97,7 +97,7 @@ class Kettle(threading.Thread):
 
 #        try:
         logfile = "/mnt/ramdisk/" + self.name
-        jsonmessage = '{"target": ' + str(self.target) + ', "temp": ' + str(temp) + '}'
-        with open (logfile, 'w+') as f: f.write(jsonmessage)
+        #jsonmessage = '{"target": ' + str(self.target) + ', "temp": ' + str(temp) + '}'
+        with open (logfile, 'w+') as f: f.write(str(temp))
 #        except:
 #            print "Error writing to ramdisk file"

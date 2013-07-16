@@ -35,7 +35,7 @@ def newbrewid(brewname):
     return brewid
 
 
-def start(brewname="adellewit", brewid=0):
+def start(brewname="testing", brewid=0):
     if brewid == 0:
         brewid = newbrewid(brewname)
 
