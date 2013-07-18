@@ -3,11 +3,11 @@ from flask import *
 import MySQLdb as mdb
 import simplejson as json
 import datetime,time
-from yaml import load
+from yaml import load, dump
 try:
-    from yaml import CLoader as Loader
+    from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
-    from yaml import Loader
+    from yaml import Loader, Dumper
 
 app = Flask(__name__)
 # configuration
@@ -80,10 +80,14 @@ def latest_json(B_id):
     thetarget = data[2]
     return jsonify(time=thetime, temp=thetemp, target=thetarget)
 
+@app.route('/latest')
+def latest():
+    return jsonify(getKettles())
 
-def getconfig (file):
+
+def getconfig ():
     try:
-        f= open(file)
+        f= open("config.yaml", 'r')
         data = load (f, Loader=Loader)
         f.close
         return data
@@ -94,9 +98,8 @@ def getconfig (file):
 # gets info from config file and reads from the ramdisk file to get the current temp.
 def getKettles():
     kettlepath='/mnt/ramdisk/'
-    configfile='config.yaml'
 
-    data = getconfig(configfile)
+    data = getconfig()
     for config in data:
         kettlefile=kettlepath + config
         pretemp = data[config]
@@ -118,7 +121,16 @@ def home():
 
 @app.route('/configure', methods=['POST'])
 def configure():
-    print request.form
+    newconfigs = getconfig()
+    for config in newconfigs:
+        newconfigs[config]["enabled"] = str(request.form[config + "_enabled"])
+        newconfigs[config]["target"] = str(request.form[config + "_target"])
+    try:
+        f = open("config.yaml", 'w')
+        data = dump(newconfigs, f,  Dumper=Dumper)
+        f.close()
+    except:
+        print "error updating config file"
     return redirect('/')
 
 #starts the dev web server
