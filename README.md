@@ -27,7 +27,7 @@ w1-therm
 
 unneeded, but nice on a bare raspbian:
 ```
-sudo aptitude install vim digitemp wicd-curses wicd i2c-tools git tmuxsu
+sudo aptitude install vim digitemp wicd-curses wicd i2c-tools git tmux
 ```
 required
 ```
