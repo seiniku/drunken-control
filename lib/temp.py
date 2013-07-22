@@ -26,7 +26,8 @@ class Temp(Thread):
                     f = open(self.tempDir + self.fileName + "/w1_slave", 'r')
                 except IOError as e:
                     print "Error: File " + self.tempDir + self.fileName + "/w1_slave" + " does not exist.";
-                    return;
+                    time.sleep(30)
+                    continue;
 
                 lines=f.readlines()
                 crcLine=lines[0]

@@ -1,33 +1,67 @@
 <html>
     <head>
+        <style>
+            {% for item in kettles %}
+            #{{ item|e }} {
+                width: 250px; height: 200px;
+                display: inline-block;
+                margin: 1em;
+
+            }
+            {% endfor %}
+        </style>
+
+        <script src="static/js/raphael.2.1.0.min.js"></script>
+        <script src="static/js/justgage.1.0.1.min.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script type="text/javascript">
-            var auto_refresh = setInterval(
-                    function (){
-                    $.getJSON("latest", {
+            {% for item in kettles %}
+            var {{ item|e }};
+            {% endfor %}
+            window.onload = function(){
+                {% for item in kettles %}
+                var {{ item|e }} = new JustGage({
+                    id: "{{ item|e }}",
+                    value: {{ kettles[item].temp|e }},
+                    min: 0,
+                    max: 212,
+                    title: "{{ item|e }}",
+                    label: "Fahrenheit",
+                    });
+                {% endfor %}
+            setInterval(
+                function (){
+                $.getJSON("latest", {
 
-                        }).done(function( data) {
-                            document.getElementById("status").innerHTML = ""
-                            $.each(data, function(name,data){
-                                if (data["enabled"] == "true"){
-                                var thediv = document.getElementById("status")
-                                var outstring = name + " is at " + data["temp"] + " and is aiming for " + data["target"] +"<br/>"
-                                    thediv.innerHTML += outstring 
-                                }
-                                })
-                            
+                    }).done(function( data) {
+                        {% for item in kettles %}
+                        {{ item }}.refresh(data["{{ item }}"]["temp"]);
+                        {% endfor %}
+
+                        document.getElementById("status").innerHTML = "";
+                        $.each(data, function(name,data){
+                            if (data["enabled"] == "true"){
+                            var temp = parseFloat(data["temp"]).toFixed(2);
+                            var thediv = document.getElementById("status");
+                            var outstring = name + " is at " + data["temp"] + " and is aiming for " + data["target"] +"<br/>";
+                            thediv.innerHTML += outstring;
+                        
+                            };
                             });
-                    },5000);
+                            
+                        });
+                },5000);
+            };
         </script>
+
     </head>
+
     <body>
         <h1>
         	Status
-	</h1>
-    <div id="status">
-        <p>
-        
-        
+        </h1>
+        <h1>
+            <div id="status">
         {% for item in kettles %}
             {% if kettles[item].enabled == "true" %}
                 {{ item|e }} is at {{ kettles[item].temp|e }} and is aiming for {{ kettles[item].target|e }}
@@ -35,9 +69,12 @@
             {% endif %}
         {% endfor %}
 
-        </p>
     </div>
-	<h1>
+</h1>
+    {% for item in kettles %}
+    <div id ="{{ item|e }}"></div>
+    {% endfor %}
+    <h1>
 		Configuration
 	</h1>
 	<form action="/configure" method="post">

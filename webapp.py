@@ -92,7 +92,7 @@ def getconfig ():
         f.close
         return data
     except IOError:
-        print "Error: Cannot find config file " + file
+        print "Error: Cannot find config file "
         return 0
 
 # gets info from config file and reads from the ramdisk file to get the current temp.
@@ -109,7 +109,7 @@ def getKettles():
                 pretemp["temp"] = f.read().strip()
                 f.close()
             except:
-                pretemp["temp"] = "Error Reading Temp"
+                pretemp["temp"] = "0"
     return data
 
 @app.route('/')

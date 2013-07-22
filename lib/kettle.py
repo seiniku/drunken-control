@@ -12,9 +12,12 @@ class Kettle(threading.Thread):
     def __init__(self, conf, name, brewid):
         threading.Thread.__init__(self)
         self.daemon = True
-        self.enabled = conf["enabled"]
+        if conf["enabled"] == "true":
+            self.enabled = True
+        else:
+            self.enabled = False
         self.gpio_number = conf["gpio_number"]
-        self.target = conf["target"]
+        self.target = int(conf["target"])
         self.sensor = Temp(fileName = conf["temp_sensor"], correctionFactor = conf["temp_offset"])
         self.band = 0.2
         self.jee = Adafruit_MCP230XX(address=0x26, num_gpios=8, busnum=1)
@@ -31,8 +34,7 @@ class Kettle(threading.Thread):
                 self.sensor.setEnabled(True)
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != -999:
-                    if self.brewid:
-                        self._updatedb(currentTemp)
+                    self._updatedb(currentTemp)
                     if currentTemp < (self.target - 10):
                         duty = 100
                     elif (self.target - 5) < currentTemp < (self.target + self.band):
@@ -54,10 +56,13 @@ class Kettle(threading.Thread):
         return self.target
 
     def setTarget(self, target):
-        self.target = target
+        self.target = int(target)
 
     def setEnabled(self, enabled):
-        self.enabled = enabled
+        if enabled == "true":
+            self.enabled = True
+        else:
+            self.enabled = False
 
     def isEnabled(self):
         return self.enabled
@@ -95,9 +100,8 @@ class Kettle(threading.Thread):
         except:
             print "Error connecting to database"
 
-#        try:
-        logfile = "/mnt/ramdisk/" + self.name
-        #jsonmessage = '{"target": ' + str(self.target) + ', "temp": ' + str(temp) + '}'
-        with open (logfile, 'w+') as f: f.write(str(temp))
-#        except:
-#            print "Error writing to ramdisk file"
+        try:
+            logfile = "/mnt/ramdisk/" + self.name
+            with open (logfile, 'w+') as f: f.write(str(temp))
+        except:
+            print "Error writing to ramdisk file"
