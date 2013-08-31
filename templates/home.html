@@ -4,7 +4,11 @@
             {% for item in kettles %}
             #{{ item|e }} {
                 width: 250px; height: 200px;
+                {% if kettles[item].enabled == "true" %}
                 display: inline-block;
+                {% else %}
+                display: none;
+                {% endif %}
                 margin: 1em;
 
             }
@@ -35,7 +39,13 @@
 
                     }).done(function( data) {
                         {% for item in kettles %}
-                        {{ item }}.refresh(data["{{ item }}"]["temp"]);
+                        {{ item|e }}.refresh(data["{{ item }}"]["temp"]);
+                        if (data["{{ item|e }}"]["enabled"] =="true"){
+                            document.getElementById("{{ item|e }}").style.display = 'inline-block';
+                            }
+                        else {
+                            document.getElementById("{{ item|e }}").style.display = 'none';
+                        }
                         {% endfor %}
 
                         document.getElementById("status").innerHTML = "";
@@ -71,7 +81,7 @@
 
     </div>
 </h1>
-    {% for item in kettles %}
+{% for item in kettles %}
     <div id ="{{ item|e }}"></div>
     {% endfor %}
     <h1>
