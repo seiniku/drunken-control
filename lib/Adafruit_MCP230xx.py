@@ -42,7 +42,7 @@ class Adafruit_MCP230XX(object):
 
     def __init__(self, address, num_gpios, busnum = 0):
         assert num_gpios >= 0 and num_gpios <= 16, "Number of GPIOs must be between 0 and 16"
-        self.i2c = Adafruit_I2C(address=address, bus=smbus.SMBus(busnum))     
+        self.i2c = Adafruit_I2C(address=address, bus=smbus.SMBus(busnum))
         self.address = address
         self.num_gpios = num_gpios
 
@@ -58,7 +58,7 @@ class Adafruit_MCP230XX(object):
             self.direction |= self.i2c.readU8(MCP23017_IODIRB) << 8
             self.i2c.write8(MCP23017_GPPUA, 0x00)
             self.i2c.write8(MCP23017_GPPUB, 0x00)
-    
+
     def _changebit(self, bitmap, bit, value):
         assert value == 1 or value == 0, "Value is %s must be 1 or 0" % value
         if value == 0:
@@ -86,7 +86,7 @@ class Adafruit_MCP230XX(object):
                 return self._readandchangepin(MCP23017_GPPUB, pin-8, value)
 
     # Set pin to either input or output mode
-    def config(self, pin, mode):        
+    def config(self, pin, mode):
         if self.num_gpios <= 8:
             self.direction = self._readandchangepin(MCP23017_IODIRA, pin, mode)
         if self.num_gpios <= 16:
@@ -112,7 +112,7 @@ class Adafruit_MCP230XX(object):
 
         self.outputvalue = self._readandchangepin(MCP23017_IODIRA, pin, value, self.outputvalue)
         return self.outputvalue
-        
+
     def input(self, pin):
         assert pin >= 0 and pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
         assert self.direction & (1 << pin) != 0, "Pin %s not set to input" % pin
@@ -153,7 +153,7 @@ class Adafruit_MCP230XX(object):
     def write16(self, value):
         assert self.num_gpios >= 16, "16bits required"
         self.i2c.write8(MCP23017_OLATA, value & 0xFF)
-        self.i2c.write8(MCP23017_OLATB, (value >> 8) & 0xFF)        
+        self.i2c.write8(MCP23017_OLATB, (value >> 8) & 0xFF)
 
 # RPi.GPIO compatible interface for MCP23017 and MCP23008
 
@@ -175,17 +175,17 @@ class MCP230XX_GPIO(object):
         self.chip.output(pin, value)
     def pullup(self, pin, value):
         self.chip.pullup(pin, value)
-        
+
 
 if __name__ == '__main__':
-    mcp = Adafruit_MCP230XX(address = 0x26, num_gpios = 8)
+    mcp = Adafruit_MCP230XX(busnum = 1, address = 0x26, num_gpios = 8)
 
     # ***************************************************
     # Set num_gpios to 8 for MCP23008 or 16 for MCP23017!
     # If you have a new Pi you may also need to add:
     # busnum = 1
     # ***************************************************
-    
+
     # Set pins 0, 1 and 2 to output (you can set pins 0..15 this way)
     for pin in range(8):
         mcp.config(pin, mcp.OUTPUT)
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     # mcp.pullup(3, 1)
     # Read pin 3 and display the results
     # print "%d: %x" % (3, mcp.input(3) >> 3)
-    
+
     # Python speed test on output 0 toggling at max speed
     while (True):
         for pin in range(8):
@@ -202,5 +202,5 @@ if __name__ == '__main__':
             time.sleep(1)
             mcp.output(pin,0)
             time.sleep(1)
-      
-      
+
+

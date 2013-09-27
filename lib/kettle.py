@@ -45,7 +45,7 @@ class Kettle(threading.Thread):
                         duty = 0
                 if self.target > 299:
                     duty = self.target - 300
-                print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) + "%"
+                print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) + "% on pin " + str(self.gpio_number)
                 self._switch(duty)
 
             else:
@@ -71,7 +71,7 @@ class Kettle(threading.Thread):
     Takes the pin on a jeelabs output plug and sets it to 1 or 0 depending on if the heat should be on or not.
     '''
     def _switch(self, duty_cycle):
-        self.jee.config(4,self.jee.OUTPUT)
+        self.jee.config(self.gpio_number,self.jee.OUTPUT)
         cycle_time = 2
         if duty_cycle == 100:
             self.jee.output(self.gpio_number,1)
