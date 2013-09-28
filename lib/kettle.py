@@ -88,7 +88,7 @@ class Kettle(threading.Thread):
     '''
     def _switch(self, duty_cycle):
         self.jee.config(self.gpio_number,self.jee.OUTPUT)
-        cycle_time = 2
+        cycle_time = 10
         if duty_cycle == 100:
             self.jee.output(self.gpio_number,1)
             time.sleep(cycle_time)
