@@ -103,13 +103,12 @@ def getKettles():
     for config in data:
         kettlefile=kettlepath + config
         pretemp = data[config]
-        if pretemp["enabled"]:
-            try:
-                f = open(kettlefile)
-                pretemp["temp"] = f.read().strip()
-                f.close()
-            except:
-                pretemp["temp"] = "0"
+        try:
+            f = open(kettlefile)
+            pretemp["temp"] = f.read().strip()
+            f.close()
+        except:
+            pretemp["temp"] = "0"
     return data
 
 @app.route('/')
@@ -123,7 +122,8 @@ def home():
 def configure():
     newconfigs = getconfig()
     for config in newconfigs:
-        newconfigs[config]["enabled"] = str(request.form[config + "_enabled"])
+        #newconfigs[config]["enabled"] = str(request.form[config + "_enabled"])
+        newconfigs[config]["state"] = str(request.form[config + "_state"])
         newconfigs[config]["target"] = str(request.form[config + "_target"])
     try:
         f = open("config.yaml", 'w')

@@ -4,7 +4,7 @@
             {% for item in kettles %}
             #{{ item|e }} {
                 width: 250px; height: 200px;
-                {% if kettles[item].enabled == "true" %}
+                {% if kettles[item].state != "off" %}
                 display: inline-block;
                 {% else %}
                 display: none;
@@ -40,7 +40,7 @@
                     }).done(function( data) {
                         {% for item in kettles %}
                         {{ item|e }}.refresh(data["{{ item }}"]["temp"]);
-                        if (data["{{ item|e }}"]["enabled"] =="true"){
+                        if (data["{{ item|e }}"]["state"] != "off"){
                             document.getElementById("{{ item|e }}").style.display = 'inline-block';
                             }
                         else {
@@ -50,11 +50,14 @@
 
                         document.getElementById("status").innerHTML = "";
                         $.each(data, function(name,data){
-                            if (data["enabled"] == "true"){
-                            var temp = parseFloat(data["temp"]).toFixed(2);
-                            var thediv = document.getElementById("status");
-                            var outstring = name + " is at " + data["temp"] + " and is aiming for " + data["target"] +"<br/>";
-                            thediv.innerHTML += outstring;
+                            if (data["state"] != "off"){
+                                var temp = parseFloat(data["temp"]).toFixed(2);
+                                var thediv = document.getElementById("status");
+                                var outstring = name + " is at " + data["temp"];
+                                if (data["state"] == "control"){
+                                    outstring = outstring + " and is aiming for " + data["target"];
+                                };
+                                thediv.innerHTML += outstring + "<br/>";
                         
                             };
                             });
@@ -73,8 +76,8 @@
         <h1>
             <div id="status">
         {% for item in kettles %}
-            {% if kettles[item].enabled == "true" %}
-                {{ item|e }} is at {{ kettles[item].temp|e }} and is aiming for {{ kettles[item].target|e }}
+            {% if kettles[item].state != "off" %}
+            {{ item|e }} is at {{ kettles[item].temp|e }} {% if kettles[item[state]] == "control" %} and is aiming for {{ kettles[item].target|e }} {% endif %}
                 <br />
             {% endif %}
         {% endfor %}
@@ -92,11 +95,10 @@
 	<b>{{ item|e }}:</b> 
 	<UL>
 
-        <LI><select name="{{ item|e }}_enabled">
-            <option value="true"  {% if kettles[item].enabled =="true" %} selected {% endif %}>Enabled</option>
-            <option value="false" {% if kettles[item].enabled == "false" %} selected {% endif %}>Disabled</option>
-        
-        </select></LI>
+        <LI><select name="{{ item|e }}_state">
+            <option value="off" {% if kettles[item].state == "off" %} selected {% endif %}>Off</option>
+            <option value="monitor" {% if kettles[item].state == "monitor" %} selected {% endif %}>Monitor</option>
+            <option value="control" {% if kettles[item].state == "control" %} selected {% endif %}>Control</option>
 		<LI>Target <input name="{{ item|e  }}_target" type=number value={{ kettles[item].target|e }}></LI>
 	</UL>
 	{% endfor %}

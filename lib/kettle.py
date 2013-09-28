@@ -25,12 +25,12 @@ class Kettle(threading.Thread):
         self.name = name
         self.database = mdb.connect('chop.bad.wolf','brew','brewit','brewery')
         self.brewid = brewid
-
+        self.state = conf["state"]
     def run(self):
         self.sensor.start()
         duty = 0
         while True:
-            if self.isEnabled():
+            if self.state == "control":
                 self.sensor.setEnabled(True)
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != -999:
@@ -47,7 +47,12 @@ class Kettle(threading.Thread):
                     duty = self.target - 300
                 print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) + "% on pin " + str(self.gpio_number)
                 self._switch(duty)
-
+            elif self.state == "monitor":
+                self.sensor.setEnabled(True)
+                currentTemp = self.sensor.getCurrentTemp()
+                if currentTemp != 999:
+                    self._updatedb(currentTemp)
+                print self.name + " is at " + str(currentTemp)
             else:
                 self.sensor.setEnabled(False)
             time.sleep(1)
@@ -66,6 +71,17 @@ class Kettle(threading.Thread):
 
     def isEnabled(self):
         return self.enabled
+
+    def setState(self, state):
+        if (state == "off") or (state == "monitor") or (state == "control"):
+            self.state = state
+        else:
+            print "invalid state configured, setting state to off"
+            self.state = "off"
+    def getState(self):
+        return self.state
+
+
 
     '''
     Takes the pin on a jeelabs output plug and sets it to 1 or 0 depending on if the heat should be on or not.

@@ -59,6 +59,7 @@ def start(brewname="testing", brewid=0):
             for config in newdata:
                kettles[config].setEnabled(newdata[config]["enabled"])
                kettles[config].setTarget(newdata[config]["target"])
+               kettles[config].setState(newdata[config]["state"])
         data = newdata
         time.sleep(5)
 
