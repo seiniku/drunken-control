@@ -4,7 +4,7 @@
             {% for item in kettles %}
             #{{ item|e }} {
                 width: 250px; height: 200px;
-                {% if kettles[item].state != "off" %}
+                {% if kettles[item].state != "disabled" %}
                 display: inline-block;
                 {% else %}
                 display: none;
@@ -40,7 +40,7 @@
                     }).done(function( data) {
                         {% for item in kettles %}
                         {{ item|e }}.refresh(data["{{ item }}"]["temp"]);
-                        if (data["{{ item|e }}"]["state"] != "off"){
+                        if (data["{{ item|e }}"]["state"] != "disabled"){
                             document.getElementById("{{ item|e }}").style.display = 'inline-block';
                             }
                         else {
@@ -50,7 +50,7 @@
 
                         document.getElementById("status").innerHTML = "";
                         $.each(data, function(name,data){
-                            if (data["state"] != "off"){
+                            if (data["state"] != "disabled"){
                                 var temp = parseFloat(data["temp"]).toFixed(2);
                                 var thediv = document.getElementById("status");
                                 var outstring = name + " is at " + data["temp"];
@@ -76,7 +76,7 @@
         <h1>
             <div id="status">
         {% for item in kettles %}
-            {% if kettles[item].state != "off" %}
+            {% if kettles[item].state != "disabled" %}
             {{ item|e }} is at {{ kettles[item].temp|e }} {% if kettles[item[state]] == "control" %} and is aiming for {{ kettles[item].target|e }} {% endif %}
                 <br />
             {% endif %}
@@ -96,14 +96,15 @@
 	<UL>
 
         <LI><select name="{{ item|e }}_state">
-            <option value="off" {% if kettles[item].state == "off" %} selected {% endif %}>Off</option>
+            <option value="disabled" {% if kettles[item].state == "disabled" %} selected {% endif %}>Disabled</option>
             <option value="monitor" {% if kettles[item].state == "monitor" %} selected {% endif %}>Monitor</option>
             <option value="control" {% if kettles[item].state == "control" %} selected {% endif %}>Control</option>
+        </select></LI>
 		<LI>Target <input name="{{ item|e  }}_target" type=number value={{ kettles[item].target|e }}></LI>
 	</UL>
 	{% endfor %}
 	<input type="submit" value="Update configuration">
-	</form
-     </body
+</form>
+     </body>
 
 </html>

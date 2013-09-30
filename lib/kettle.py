@@ -52,10 +52,10 @@ class Kettle(threading.Thread):
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != 999:
                     self._updatedb(currentTemp)
+                    time.sleep(2)
                 print self.name + " is at " + str(currentTemp)
             else:
                 self.sensor.setEnabled(False)
-            time.sleep(1)
 
     def getTarget(self):
         return self.target
@@ -73,11 +73,11 @@ class Kettle(threading.Thread):
         return self.enabled
 
     def setState(self, state):
-        if (state == "off") or (state == "monitor") or (state == "control"):
+        if (state == "disabled") or (state == "monitor") or (state == "control"):
             self.state = state
         else:
-            print "invalid state configured, setting state to off"
-            self.state = "off"
+            print "invalid state configured, setting state to disabled"
+            self.state = "disabled"
     def getState(self):
         return self.state
 
@@ -88,7 +88,7 @@ class Kettle(threading.Thread):
     '''
     def _switch(self, duty_cycle):
         self.jee.config(self.gpio_number,self.jee.OUTPUT)
-        cycle_time = 10
+        cycle_time = 2
         if duty_cycle == 100:
             self.jee.output(self.gpio_number,1)
             time.sleep(cycle_time)

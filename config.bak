@@ -1,0 +1,6 @@
+stick: {enabled: 'false', gpio_number: 7, state: 'off', target: '0', temp_offset: 0,
+  temp_sensor: 28-0000044ab949}
+tengal: {enabled: 'false', gpio_number: 5, state: 'off', target: '385', temp_offset: 0,
+  temp_sensor: 10-000802c1bac7}
+twentygal: {enabled: 'false', gpio_number: 3, state: 'off', target: '350', temp_offset: 0,
+  temp_sensor: 28-00000519a4b5}

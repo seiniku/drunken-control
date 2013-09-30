@@ -127,7 +127,7 @@ def configure():
         newconfigs[config]["target"] = str(request.form[config + "_target"])
     try:
         f = open("config.yaml", 'w')
-        data = dump(newconfigs, f,  Dumper=Dumper)
+        data = dump(newconfigs, f,  Dumper=Dumper, default_flow_style=False)
         f.close()
     except:
         print "error updating config file"
