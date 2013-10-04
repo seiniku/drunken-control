@@ -84,7 +84,6 @@ def latest_json(B_id):
 def latest():
     return jsonify(getKettles())
 
-
 def getconfig ():
     try:
         f= open("config.yaml", 'r')
@@ -98,7 +97,6 @@ def getconfig ():
 # gets info from config file and reads from the ramdisk file to get the current temp.
 def getKettles():
     kettlepath='/mnt/ramdisk/'
-
     data = getconfig()
     for config in data:
         kettlefile=kettlepath + config
@@ -114,8 +112,6 @@ def getKettles():
 @app.route('/')
 def home():
     kettlelist = getKettles()
-
-
     return render_template('home.html',kettles=kettlelist)
 
 @app.route('/configure', methods=['POST'])

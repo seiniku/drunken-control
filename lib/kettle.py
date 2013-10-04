@@ -56,7 +56,7 @@ class Kettle(threading.Thread):
                 print self.name + " is at " + str(currentTemp)
             else:
                 self.sensor.setEnabled(False)
-
+                self.jee.output(self.gpio_number,0)
     def getTarget(self):
         return self.target
 
