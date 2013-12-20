@@ -1,3 +1,28 @@
-stick: {enabled: 'false', gpio_number: 7, target: '0', temp_offset: 0, temp_sensor: 28-49B94A040000}
-tengal: {enabled: 'true', gpio_number: 4, target: '0', temp_offset: 0, temp_sensor: 28-000004811c44}
-twentygal: {enabled: 'false', gpio_number: 4, target: '', temp_offset: 0, temp_sensor: 28-00000481dd3a}
+bomb:
+  enabled: 'false'
+  gpio_number: 1
+  state: disabled
+  target: '130'
+  temp_offset: 0
+  temp_sensor: 28-000004a1c85c
+stick:
+  enabled: 'false'
+  gpio_number: 7
+  state: disabled
+  target: '0'
+  temp_offset: 0
+  temp_sensor: 28-0000044ab949
+tengal:
+  enabled: 'false'
+  gpio_number: 5
+  state: disabled
+  target: '168'
+  temp_offset: 0
+  temp_sensor: 10-000802c1bac7
+twentygal:
+  enabled: 'false'
+  gpio_number: 3
+  state: disabled
+  target: '290'
+  temp_offset: 0
+  temp_sensor: 28-00000519a4b5
