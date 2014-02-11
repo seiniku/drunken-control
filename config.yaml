@@ -2,16 +2,31 @@ bomb:
   enabled: 'false'
   gpio_number: 1
   state: disabled
-  target: '130'
+  target: '154'
   temp_offset: 0
   temp_sensor: 28-000004a1c85c
+  usePid: False
+  pid_K: 0
+  pid_I: 0
+  pid_D: 0
+  cycle_time: 2
+  band: 0.2
+
+
 stick:
   enabled: 'false'
   gpio_number: 7
   state: disabled
-  target: '0'
+  target: '05'
   temp_offset: 0
   temp_sensor: 28-0000044ab949
+  usePid: False
+  pid_K: 0
+  pid_I: 0
+  pid_D: 0
+  cycle_time: 2
+  band: 0.2
+
 tengal:
   enabled: 'false'
   gpio_number: 5
@@ -19,10 +34,23 @@ tengal:
   target: '168'
   temp_offset: 0
   temp_sensor: 10-000802c1bac7
+  usePid: False
+  pid_K: 0
+  pid_I: 0
+  pid_D: 0
+  cycle_time: 2
+  band: 0.2
+
 twentygal:
   enabled: 'false'
   gpio_number: 3
   state: disabled
-  target: '290'
+  target: '380'
   temp_offset: 0
   temp_sensor: 28-00000519a4b5
+  usePid: False
+  pid_K: 0
+  pid_I: 0
+  pid_D: 0
+  cycle_time: 2
+  band: 0.2
