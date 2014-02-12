@@ -20,33 +20,15 @@ def getconfig(file):
         print "Error: Cannot find config file " + file
         return 0
 
-#generates a new brewid if the database is connected.
-def newbrewid(brewname):
-    try:
-        database = mdb.connect('chop.bad.wolf', 'brew', 'brewit', 'brewery');
-        cursor = database.cursor()
-        cursor.execute('INSERT INTO brewlog (brew) VALUES (%s)', [brewname])
-        brewid = cursor.lastrowid
-        database.commit()
-        cursor.close()
-    except:
-        print "Error connecting to database, session will not be saved nor will the web interface work"
-        brewid = 0
-    return brewid
-
-
-def start(brewname="testing", brewid=0):
-    if brewid == 0:
-        brewid = newbrewid(brewname)
-
-    configfile="config.yaml"
+def start():
+    configfile="/home/jkeppers/drunken-control/config.yaml"
     data = getconfig(configfile)
     if not data:
         exit(1)
 #The list of kettles defined in the config file
     kettles = {}
     for config in data:
-        kettles[config] = Kettle(conf=data[config], name=config, brewid=brewid)
+        kettles[config] = Kettle(conf=data[config], name=config)
         kettles[config].start()
 #Reads the config file  every five second and checks for changes. If changes are found it sets enabled and target for each kettle defined
     while True:
@@ -60,6 +42,7 @@ def start(brewname="testing", brewid=0):
                kettles[config].setEnabled(newdata[config]["enabled"])
                kettles[config].setTarget(newdata[config]["target"])
                kettles[config].setState(newdata[config]["state"])
+               kettles[config].setConfig(newdata[config])
         data = newdata
         time.sleep(5)
 

@@ -1,15 +1,15 @@
 import threading
 import time
 import datetime
-import MySQLdb as mdb
 from temp import Temp
 from Adafruit_MCP230xx import *
+import pidpy
 class Kettle(threading.Thread):
     """
     A class for managing a brew kettle
     """
 
-    def __init__(self, conf, name, brewid):
+    def __init__(self, conf, name):
         threading.Thread.__init__(self)
         self.daemon = True
         if conf["enabled"] == "true":
@@ -19,13 +19,17 @@ class Kettle(threading.Thread):
         self.gpio_number = conf["gpio_number"]
         self.target = int(conf["target"])
         self.sensor = Temp(fileName = conf["temp_sensor"], correctionFactor = conf["temp_offset"])
-        self.band = 0.2
+        self.band = conf["band"]
         self.jee = Adafruit_MCP230XX(address=0x26, num_gpios=8, busnum=1)
         self.jee.config(self.gpio_number,self.jee.OUTPUT)
         self.name = name
-        self.database = mdb.connect('chop.bad.wolf','brew','brewit','brewery')
-        self.brewid = brewid
         self.state = conf["state"]
+        self.usePid = conf["usePid"]
+        self.pid_K = conf["pid_K"]
+        self.pid_I = conf["pid_I"]
+        self.pid_D = conf["pid_D"]
+        self.cycle_time = conf["cycle_time"]
+        self.pid = pidpy.pidpy(self.cycle_time,self.pid_K,self.pid_I,self.pid_D)
     def run(self):
         self.sensor.start()
         duty = 0
@@ -35,16 +39,7 @@ class Kettle(threading.Thread):
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != -999:
                     self._updatedb(currentTemp)
-                    if currentTemp < (self.target - 10):
-                        duty = 100
-                    elif (self.target - 5) < currentTemp < (self.target + self.band):
-                        duty = 50
-                    elif (self.target - 10) < currentTemp < (self.target - self.band):
-                        duty = 75
-                    else:
-                        duty = 0
-                if self.target > 299:
-                    duty = self.target - 300
+                    duty = self.getDuty(currentTemp)
                 print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) + "% on pin " + str(self.gpio_number)
                 self._switch(duty)
             elif self.state == "monitor":
@@ -57,6 +52,34 @@ class Kettle(threading.Thread):
             else:
                 self.sensor.setEnabled(False)
                 self.jee.output(self.gpio_number,0)
+
+    def getDuty(self, currentTemp):
+        duty = 0
+        #return manual duty
+        if self.target > 299:
+            return self.target - 300
+        #if no temp is given, turn it off.
+        if currentTemp == -999:
+            return 0
+        #insert pid logics here
+        if self.usePid:
+            duty = self.pid.calcPID_reg4(currentTemp, self.target)
+            print duty
+            return duty
+        #simple on/off logic
+        else:
+            if currentTemp < (self.target - 10):
+                duty = 100
+            elif (self.target - 5) < currentTemp < (self.target + self.band):
+                duty = 50
+            elif (self.target - 10) < currentTemp < (self.target - self.band):
+                duty = 75
+            else:
+                duty = 0
+            return duty
+
+
+
     def getTarget(self):
         return self.target
 
@@ -81,14 +104,26 @@ class Kettle(threading.Thread):
     def getState(self):
         return self.state
 
+    def setConfig(self, conf):
+        if conf["enabled"] == "true":
+            self.enabled = True
+        else:
+            self.enabled = False
+        self.target = int(conf["target"])
+        self.band = conf["band"]
+        self.state = conf["state"]
+        self.usePid = conf["usePid"]
+        self.pid_K = conf["pid_K"]
+        self.pid_I = conf["pid_I"]
+        self.pid_D = conf["pid_D"]
+        self.cycle_time = conf["cycle_time"]
 
-
-    '''
+        '''
     Takes the pin on a jeelabs output plug and sets it to 1 or 0 depending on if the heat should be on or not.
     '''
     def _switch(self, duty_cycle):
         self.jee.config(self.gpio_number,self.jee.OUTPUT)
-        cycle_time = 2
+        cycle_time = self.cycle_time
         if duty_cycle == 100:
             self.jee.output(self.gpio_number,1)
             time.sleep(cycle_time)
@@ -107,15 +142,6 @@ class Kettle(threading.Thread):
     takes the temperature and updates the database as well as the ramdisk file
     '''
     def _updatedb(self, temp):
-        try:
-            time = datetime.datetime.now()
-            cursor = self.database.cursor()
-            cursor.execute('INSERT INTO templog (brewid, time, temp, target, element) VALUES (%s,%s,%s,%s,%s)',(self.brewid, time, temp, self.target, self.name))
-            self.database.commit()
-            cursor.close()
-        except:
-            print "Error connecting to database"
-
         try:
             logfile = "/mnt/ramdisk/" + self.name
             with open (logfile, 'w+') as f: f.write(str(temp))

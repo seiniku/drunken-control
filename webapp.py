@@ -86,7 +86,7 @@ def latest():
 
 def getconfig ():
     try:
-        f= open("config.yaml", 'r')
+        f= open("/home/jkeppers/drunken-control/config.yaml", 'r')
         data = load (f, Loader=Loader)
         f.close
         return data
@@ -122,7 +122,7 @@ def configure():
         newconfigs[config]["state"] = str(request.form[config + "_state"])
         newconfigs[config]["target"] = str(request.form[config + "_target"])
     try:
-        f = open("config.yaml", 'w')
+        f = open("/home/jkeppers/drunken-control/config.yaml", 'w')
         data = dump(newconfigs, f,  Dumper=Dumper, default_flow_style=False)
         f.close()
     except:
