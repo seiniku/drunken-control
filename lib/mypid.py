@@ -12,15 +12,13 @@ class mypid(object):
         self.integral = 0.0
         self.history = [0] * history_depth 
         self.previous_value = 0.0
-
-
+        self.previous_history = self.history
 
     def set_target(self, target):
         self.target = target
 
     def reset(self):
         self.previous_error = 0.0
-        self.integral = 0.0
         self.last_time = None
         self.previous_value = 0.0
 
@@ -42,19 +40,24 @@ class mypid(object):
 
     def get_integral(self, error, delta_time):
         #classic
-        self.integral += self.ki * error * delta_time
+        newintegral = self.ki * error * delta_time
+        self.previous_history = self.history
+
+        if self.history_depth == -1:
+            self.integral += newintegral
 
         #with_history
+        self.history.append(newintegral)
+        self.history = self.history[(self.history_depth-1):] #keeps the last n items of the list
         if self.history_depth != -1:
-            self.history.append(self.ki * error * delta_time)
-            self.history = self.history[(self.history_depth-1):] #keeps the last n items of the list
             self.integral += float(sum(self.history)) / float(self.history_depth)
-        if self.integral > 100:
-            self.integral = 100
-        elif self.integral < 0:
-            self.integral = -100
-        return self.integral 
+        
+        return self.integral
 
+    def undo_integral(self):
+        self.history = self.previous_history
+        self.integral = self.history[-1]
+        
     def get_duty(self, value, target):
         minlimit = 0
         maxlimit = 100
@@ -64,8 +67,10 @@ class mypid(object):
         self.previous_error = err
         self.previous_value = value
         if duty > maxlimit:
+            self.undo_integral()
             duty = maxlimit
         elif duty < minlimit:
+            self.undo_integral()
             duty = minlimit
         
         print str(value) + '/' + str(target) + ' duty: '+ str(duty) + ' integral: ' + str(self.integral)
@@ -79,24 +84,8 @@ class mypid(object):
 
 if __name__=="__main__":
    # pid = mypid(history_depth=3)
-    pid = mypid(kp=1, ki=1, kd=1)
-    print pid.get_duty(34,150)
-    time.sleep(2)
-    print pid.get_duty(38,150)
-    time.sleep(2)
-    print pid.get_duty(50,150)
-    time.sleep(2)
-    print pid.get_duty(60,150)
-    time.sleep(2)
-    print pid.get_duty(76,150)
-    time.sleep(2)
-    print pid.get_duty(90,150)
-    time.sleep(2)
-    print pid.get_duty(110,150)
-    time.sleep(2)
-    print pid.get_duty(130,150)
-    time.sleep(2)
-    print pid.get_duty(150,150)
-    time.sleep(2)
-    print pid.get_duty(160,150)
-    time.sleep(2)
+    pid = mypid(kp=10, ki=14.25, kd=0)
+    
+    for x in range(1,30):
+        pid.get_duty(x*2, 40)
+        time.sleep(2)

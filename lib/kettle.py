@@ -3,7 +3,8 @@ import time
 import datetime
 from temp import Temp
 from Adafruit_MCP230xx import *
-import pidpy
+import mypid
+import graphitesend
 class Kettle(threading.Thread):
     """
     A class for managing a brew kettle
@@ -25,11 +26,11 @@ class Kettle(threading.Thread):
         self.name = name
         self.state = conf["state"]
         self.usePid = conf["usePid"]
-        self.pid_K = conf["pid_K"]
-        self.pid_I = conf["pid_I"]
-        self.pid_D = conf["pid_D"]
+        self.pid_Kp = conf["pid_Kc"]
+        self.pid_Ki = conf["pid_Ti"]
+        self.pid_Kd = conf["pid_Td"]
         self.cycle_time = conf["cycle_time"]
-        self.pid = pidpy.pidpy(self.cycle_time,self.pid_K,self.pid_I,self.pid_D)
+        self.pid = mypid.mypid(kp=self.pid_Kp,ki=self.pid_Ki,kd=self.pid_Kd, history_depth=3)
     def run(self):
         self.sensor.start()
         duty = 0
@@ -38,15 +39,15 @@ class Kettle(threading.Thread):
                 self.sensor.setEnabled(True)
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != -999:
-                    self._updatedb(currentTemp)
                     duty = self.getDuty(currentTemp)
-                print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) + "% on pin " + str(self.gpio_number)
+                    self._updatedb(currentTemp,duty)
+                print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) 
                 self._switch(duty)
             elif self.state == "monitor":
                 self.sensor.setEnabled(True)
                 currentTemp = self.sensor.getCurrentTemp()
                 if currentTemp != 999:
-                    self._updatedb(currentTemp)
+                    self._updatedb(currentTemp, duty)
                     time.sleep(2)
                 print self.name + " is at " + str(currentTemp)
             else:
@@ -63,8 +64,7 @@ class Kettle(threading.Thread):
             return 0
         #insert pid logics here
         if self.usePid:
-            duty = self.pid.calcPID_reg4(currentTemp, self.target)
-            print duty
+            duty = self.pid.get_duty(currentTemp, self.target)
             return duty
         #simple on/off logic
         else:
@@ -113,11 +113,12 @@ class Kettle(threading.Thread):
         self.band = conf["band"]
         self.state = conf["state"]
         self.usePid = conf["usePid"]
-        self.pid_K = conf["pid_K"]
-        self.pid_I = conf["pid_I"]
-        self.pid_D = conf["pid_D"]
+        self.pid_Kp = conf["pid_Kc"]
+        self.pid_Ki = conf["pid_Ti"]
+        self.pid_Kd = conf["pid_Td"]
         self.cycle_time = conf["cycle_time"]
 
+        self.pid = mypid.mypid(kp=self.pid_Kp,ki=self.pid_Ki,kd=self.pid_Kd, history_depth=3)
         '''
     Takes the pin on a jeelabs output plug and sets it to 1 or 0 depending on if the heat should be on or not.
     '''
@@ -141,9 +142,16 @@ class Kettle(threading.Thread):
     '''
     takes the temperature and updates the database as well as the ramdisk file
     '''
-    def _updatedb(self, temp):
+    def _updatedb(self, temp, duty):
         try:
             logfile = "/mnt/ramdisk/" + self.name
             with open (logfile, 'w+') as f: f.write(str(temp))
         except:
             print "Error writing to ramdisk file"
+        #send to graphite
+        summary = {'temperature':temp, 'target':self.target, 'duty':duty}
+        try:
+            graph = graphitesend.init(graphite_server='192.168.1.3',prefix="brewing", system_name=self.name)
+            graph.send_dict(summary) 
+        except:
+            print("error sending to graphite")
