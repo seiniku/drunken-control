@@ -149,7 +149,12 @@ class Kettle(threading.Thread):
         except:
             print "Error writing to ramdisk file"
         #send to graphite
-        summary = {'temperature':temp, 'target':self.target, 'duty':duty}
+        if self.state == "control":
+            target=self.target
+        else:
+            target=0
+        summary = {'temperature':temp, 'target':target, 'duty':duty}
+        
         try:
             graph = graphitesend.init(graphite_server='192.168.1.3',prefix="brewing", system_name=self.name)
             graph.send_dict(summary) 
