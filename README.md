@@ -3,7 +3,7 @@ drunken-control
 
 Software to control heating elements in a home brewery
 
-![screencap][screencap]
+![screencap](screencap.png)
 Requirements
 ============
 
