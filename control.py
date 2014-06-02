@@ -7,6 +7,7 @@ import MySQLdb as mdb
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
+    print("not loading cloader")
     from yaml import Loader, Dumper
 
 #returns the configuration dictionary from a yaml file

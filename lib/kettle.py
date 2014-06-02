@@ -1,3 +1,4 @@
+import traceback
 import threading
 import time
 import datetime
@@ -53,7 +54,6 @@ class Kettle(threading.Thread):
             else:
                 self.sensor.setEnabled(False)
                 self.jee.output(self.gpio_number,0)
-
     def getDuty(self, currentTemp):
         duty = 0
         #return manual duty
@@ -103,7 +103,6 @@ class Kettle(threading.Thread):
             self.state = "disabled"
     def getState(self):
         return self.state
-
     def setConfig(self, conf):
         if conf["enabled"] == "true":
             self.enabled = True
@@ -160,3 +159,4 @@ class Kettle(threading.Thread):
             graph.send_dict(summary) 
         except:
             print("error sending to graphite")
+            traceback.print_exc() 

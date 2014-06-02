@@ -79,11 +79,9 @@ def latest_json(B_id):
     thetemp = data[1]
     thetarget = data[2]
     return jsonify(time=thetime, temp=thetemp, target=thetarget)
-
 @app.route('/latest')
 def latest():
     return jsonify(getKettles())
-
 def getconfig ():
     try:
         f= open("/home/jkeppers/drunken-control/config.yaml", 'r')
@@ -93,7 +91,6 @@ def getconfig ():
     except IOError:
         print "Error: Cannot find config file "
         return 0
-
 # gets info from config file and reads from the ramdisk file to get the current temp.
 def getKettles():
     kettlepath='/mnt/ramdisk/'
@@ -108,12 +105,10 @@ def getKettles():
         except:
             pretemp["temp"] = "0"
     return data
-
 @app.route('/')
 def home():
     kettlelist = getKettles()
     return render_template('home.html',kettles=kettlelist)
-
 @app.route('/configure', methods=['POST'])
 def configure():
     newconfigs = getconfig()

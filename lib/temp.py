@@ -19,6 +19,7 @@ class Temp(Thread):
         self.enabled = False
         self.daemon = True
     # if enabled, this reads the w1 file and returns the temp, checking for crc.
+  
     def run(self):
         while True:
             if self.isEnabled():
