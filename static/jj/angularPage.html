@@ -1,0 +1,16 @@
+<!doctype html>
+<html ng-app="blahApp">
+    <head>
+        <title>Title, bitch!</title>
+        <script src="js/angular.min.js"></script>
+        <script src="js/angularPage.js"></script>
+   </head>
+    <body ng-controller="ElementListCtrl">
+        <ul>
+            <li ng-repeat="element in elements">
+                {{element.name}}
+                <p>{{element.band}}</p>
+            </li>
+        </ul>
+    </body>
+</html>
