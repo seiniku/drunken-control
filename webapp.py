@@ -82,6 +82,9 @@ def latest_json(B_id):
 @app.route('/latest')
 def latest():
     return jsonify(getKettles())
+@app.route('/kettles')
+def kettlesRoute():
+    return getKettles()
 def getconfig ():
     try:
         f= open("/home/jkeppers/drunken-control/config.yaml", 'r')

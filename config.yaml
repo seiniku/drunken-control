@@ -3,6 +3,7 @@ bomb:
   cycle_time: 2
   enabled: 'false'
   gpio_number: 1
+  name: bomb
   pid_Kc: 0
   pid_Td: 0
   pid_Ti: 0
@@ -16,6 +17,7 @@ stick:
   cycle_time: 2
   enabled: 'false'
   gpio_number: 7
+  name: stick
   pid_Kc: 50
   pid_Td: 0.5
   pid_Ti: 0.5
@@ -29,10 +31,11 @@ tengal:
   cycle_time: 2
   enabled: 'true'
   gpio_number: 5
+  name: tengal
   pid_Kc: 50
   pid_Td: 0.5
   pid_Ti: 0.5
-  state: monitor
+  state: disabled
   target: '168'
   temp_offset: 0
   temp_sensor: 10-000802c13fda
@@ -42,10 +45,11 @@ twentygal:
   cycle_time: 4
   enabled: 'false'
   gpio_number: 3
+  name: twentygal
   pid_Kc: 25
   pid_Td: 1
   pid_Ti: 50
-  state: monitor
+  state: disabled
   target: '380'
   temp_offset: 0
   temp_sensor: 28-00000519a4b5
