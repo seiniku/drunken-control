@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="seini.k.vu:23">
+    <serverData>
+      <paths name="seini.k.vu:23">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/jkeppers/drunken-control" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
