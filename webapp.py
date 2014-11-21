@@ -8,6 +8,7 @@ try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     from yaml import Loader, Dumper
+from flask.ext.jsonpify import jsonify
 
 app = Flask(__name__)
 # configuration
