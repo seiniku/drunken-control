@@ -8,7 +8,7 @@ bomb:
   pid_Td: 0
   pid_Ti: 0
   state: disabled
-  target: '154'
+  target: '0'
   temp_offset: 0
   temp_sensor: 28-000004a1c85c
   usePid: false
@@ -22,7 +22,7 @@ stick:
   pid_Td: 0.5
   pid_Ti: 0.5
   state: disabled
-  target: '48'
+  target: '0'
   temp_offset: 0
   temp_sensor: 28-000004a1c85c
   usePid: true
@@ -36,7 +36,7 @@ tengal:
   pid_Td: 0.5
   pid_Ti: 0.5
   state: disabled
-  target: '168'
+  target: '0'
   temp_offset: 0
   temp_sensor: 10-000802c13fda
   usePid: false
@@ -50,7 +50,7 @@ twentygal:
   pid_Td: 1
   pid_Ti: 50
   state: disabled
-  target: '380'
+  target: '0'
   temp_offset: 0
   temp_sensor: 28-00000519a4b5
   usePid: false

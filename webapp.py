@@ -10,7 +10,7 @@ except ImportError:
     from yaml import Loader, Dumper
 from flask.ext.jsonpify import jsonify
 
-app = Flask(__name__)
+app = Flask('drunken-control')
 # configuration
 app.config['SECRET_KEY'] = 'F34TF$($e34D';
 
@@ -126,7 +126,8 @@ def configure():
         f.close()
     except:
         print "error updating config file"
-    return redirect('/')
+    #return redirect('/')
+    return "written"
 
 @app.before_request
 def option_autoreply():
