@@ -42,7 +42,7 @@ class Kettle(threading.Thread):
                 if currentTemp != -999:
                     duty = self.getDuty(currentTemp)
                     self._updatedb(currentTemp,duty)
-                print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) 
+                #print self.name + " is targetting " + str(self.target) + " and is at " + str(currentTemp) + " and " + str(duty) 
                 self._switch(duty)
             elif self.state == "monitor":
                 self.sensor.setEnabled(True)
@@ -50,7 +50,7 @@ class Kettle(threading.Thread):
                 if currentTemp != 999:
                     self._updatedb(currentTemp, duty)
                     time.sleep(2)
-                print self.name + " is at " + str(currentTemp)
+                #print self.name + " is at " + str(currentTemp)
             else:
                 self.sensor.setEnabled(False)
                 self.jee.output(self.gpio_number,0)

@@ -7,8 +7,6 @@ import threading
 import control
 
 def doStuff():
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(80)
     controller=threading.Thread(target=control.start)
     controller.daemon=True
     controller.start()
