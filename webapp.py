@@ -1,4 +1,4 @@
-#!/usr/bin/python
+i!/usr/bin/python
 from flask import *
 import simplejson as json
 import datetime,time
@@ -45,6 +45,7 @@ def configure():
     for config in newconfigs:
         newconfigs[config]["state"] = str(request.form[config + "_state"])
         newconfigs[config]["target"] = str(request.form[config + "_target"])
+        newconfigs[config]["web_state"] = str(request.form[config + "_web_state"]
     try:
         f = open("/home/jkeppers/drunken-control/config.yaml", 'w')
         data = dump(newconfigs, f,  Dumper=Dumper, default_flow_style=False)
