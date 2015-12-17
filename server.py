@@ -10,7 +10,7 @@ def doStuff():
     controller=threading.Thread(target=control.start)
     controller.daemon=True
     controller.start()
-    IOLoop.instance().start()    
+    IOLoop.instance().start()
 
 if __name__ == "__main__":
     doStuff()

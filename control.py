@@ -1,49 +1,53 @@
 #!/usr/bin/python
+'''main control file'''
 import time
 from lib.kettle import Kettle
-from yaml import load, dump
-import threading
-import MySQLdb as mdb
+from yaml import load
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
-    print("not loading cloader")
-    from yaml import Loader, Dumper
+    print "not loading cloader"
+    from yaml import Loader
 
-#returns the configuration dictionary from a yaml file
-def getconfig(file):
+
+def get_config(conf_file):
+    '''returns the configuration dictionary from a yaml file'''
     try:
-        f = open(file)
-        data = load(f, Loader=Loader)
-        f.close
-        return data
+        with open(conf_file) as config:
+            # config = open(conf_file)
+            data = load(config, Loader=Loader)
+            # config.close
+            return data
     except IOError:
-        print "Error: Cannot find config file " + file
+        print "Error: Cannot find config file " + conf_file
         return 0
 
+
 def start():
-    configfile="/home/jkeppers/drunken-control/config.yaml"
-    data = getconfig(configfile)
+    '''main logic loop'''
+    configfile = "/home/jkeppers/drunken-control/config.yaml"
+    data = get_config(configfile)
     if not data:
         exit(1)
-#The list of kettles defined in the config file
+    # The list of kettles defined in the config file
     kettles = {}
     for config in data:
         kettles[config] = Kettle(conf=data[config], name=config)
         kettles[config].start()
-#Reads the config file  every five second and checks for changes. If changes are found it sets enabled and target for each kettle defined
+    # Reads the config file  every five second and checks for changes.
+    # If changes are found it sets enabled and target for each kettle defined
     while True:
-        newdata = getconfig(configfile)
+        newdata = get_config(configfile)
         if not newdata:
             time.sleep(2)
             continue
         if data != newdata:
             print "reloading config"
             for config in newdata:
-               kettles[config].setEnabled(newdata[config]["enabled"])
-               kettles[config].setTarget(newdata[config]["target"])
-               kettles[config].setState(newdata[config]["state"])
-               kettles[config].setConfig(newdata[config])
+                kettles[config].setEnabled(newdata[config]["enabled"])
+                kettles[config].setTarget(newdata[config]["target"])
+                kettles[config].setState(newdata[config]["state"])
+                kettles[config].setConfig(newdata[config])
         data = newdata
         time.sleep(5)
 
